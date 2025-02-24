@@ -25,8 +25,7 @@ var loaders = map[string]esbuildApi.Loader{
 
 var (
 	textEncoderPolyfill = `function TextEncoder(){}TextEncoder.prototype.encode=function(string){var octets=[];var length=string.length;var i=0;while(i<length){var codePoint=string.codePointAt(i);var c=0;var bits=0;if(codePoint<=0x0000007F){c=0;bits=0x00}else if(codePoint<=0x000007FF){c=6;bits=0xC0}else if(codePoint<=0x0000FFFF){c=12;bits=0xE0}else if(codePoint<=0x001FFFFF){c=18;bits=0xF0}octets.push(bits|(codePoint>>c));c-=6;while(c>=0){octets.push(0x80|((codePoint>>c)&0x3F));c-=6}i+=codePoint>=0x10000?2:1}return octets};function TextDecoder(){}TextDecoder.prototype.decode=function(octets){var string="";var i=0;while(i<octets.length){var octet=octets[i];var bytesNeeded=0;var codePoint=0;if(octet<=0x7F){bytesNeeded=0;codePoint=octet&0xFF}else if(octet<=0xDF){bytesNeeded=1;codePoint=octet&0x1F}else if(octet<=0xEF){bytesNeeded=2;codePoint=octet&0x0F}else if(octet<=0xF4){bytesNeeded=3;codePoint=octet&0x07}if(octets.length-i-bytesNeeded>0){var k=0;while(k<bytesNeeded){octet=octets[i+k+1];codePoint=(codePoint<<6)|(octet&0x3F);k+=1}}else{codePoint=0xFFFD;bytesNeeded=octets.length-i}string+=String.fromCodePoint(codePoint);i+=bytesNeeded+1}return string};`
-	processPolyfill     = `var process = {env: {NODE_ENV: "production"}};`
-	consolePolyfill     = `var console = {log: function(){}};`
+	consolePolyfill     = `var console = {log: function(){ }};`
 )
 
 type BuildResult struct {
@@ -42,17 +41,43 @@ func keyValue(env string) (key, value string) {
 	return
 }
 
-func getFrontendEnvironments() map[string]string {
-	items := make(map[string]string)
+func getEnvironments(yield func(string, string) bool) {
 	envs := os.Environ()
+
 	for _, env := range envs {
 		key, val := keyValue(env)
-		if strings.Index(key, "FRONTEND_") == 0 {
-			items[key] = val
+		if !yield(key, val) {
+			return
 		}
 	}
+}
 
+func getFrontendEnvironments() map[string]string {
+	items := make(map[string]string)
+
+	for key, val := range getEnvironments {
+		if strings.Index(key, "FRONTEND_") == 0 {
+			items[fmt.Sprintf("process.env.%s", key)] = fmt.Sprintf("'%s'", val)
+		}
+	}
+	fmt.Printf("%v\n", items)
 	return items
+}
+
+func getProcessPolyfill() string {
+	processPolyfill := `var process = {env: {`
+	first := false
+	for key, val := range getEnvironments {
+		if strings.Index(key, "FRONTEND_") == 0 && first {
+			processPolyfill = fmt.Sprintf(`%s,%s:"%s"`, processPolyfill, key, val)
+		}
+		if strings.Index(key, "FRONTEND_") == 0 && !first {
+			processPolyfill = fmt.Sprintf(`%s%s:"%s"`, processPolyfill, key, val)
+			first = true
+		}
+	}
+	processPolyfill = fmt.Sprintf(`%s}};`, processPolyfill)
+	return processPolyfill
 }
 
 func BuildServer(buildContents, frontendDir, assetRoute string) (BuildResult, error) {
@@ -74,7 +99,7 @@ func BuildServer(buildContents, frontendDir, assetRoute string) (BuildResult, er
 		Loader:            loaders,
 		// We can inject the polyfills at the top of the generated js
 		Banner: map[string]string{
-			"js": textEncoderPolyfill + processPolyfill + consolePolyfill,
+			"js": textEncoderPolyfill + getProcessPolyfill() + consolePolyfill,
 		},
 		Define: getFrontendEnvironments(),
 	}
@@ -97,6 +122,7 @@ func BuildClient(buildContents, frontendDir, assetRoute string) (BuildResult, er
 		MinifyIdentifiers: os.Getenv("APP_ENV") == "production",
 		MinifySyntax:      os.Getenv("APP_ENV") == "production",
 		Loader:            loaders,
+		Define:            getFrontendEnvironments(),
 	}
 	return build(opts, true)
 }

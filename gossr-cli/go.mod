@@ -1,6 +1,6 @@
 module github.com/yunusbyrak/go-react-ssr/gossr-cli
 
-go 1.20
+go 1.23
 
 require (
 	github.com/buger/jsonparser v1.1.1

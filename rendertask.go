@@ -1,6 +1,7 @@
 package go_ssr
 
 import (
+	"encoding/base64"
 	"fmt"
 
 	"github.com/buke/quickjs-go"
@@ -150,6 +151,11 @@ func renderReactToHTMLNew(js string) (string, error) {
 	defer rt.Close()
 	ctx := rt.NewContext()
 	defer ctx.Close()
+	globals := ctx.Globals()
+	globals.Set("atob", ctx.Function(func(ctx *quickjs.Context, this quickjs.Value, args []quickjs.Value) quickjs.Value {
+		l, _ := base64.RawStdEncoding.DecodeString(args[0].String())
+		return ctx.String(string(l))
+	}))
 	res, err := ctx.Eval(js)
 	if err != nil {
 		return "", err
