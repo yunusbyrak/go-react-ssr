@@ -8,8 +8,8 @@ import (
 
 	cp "github.com/otiai10/copy"
 
-	"github.com/natewong1313/go-react-ssr/gossr-cli/logger"
-	"github.com/natewong1313/go-react-ssr/gossr-cli/utils"
+	"github.com/yunusbyrak/go-react-ssr/gossr-cli/logger"
+	"github.com/yunusbyrak/go-react-ssr/gossr-cli/utils"
 )
 
 type Bootstrapper struct {
@@ -35,7 +35,7 @@ func (b *Bootstrapper) Start() {
 
 func (b *Bootstrapper) cloneRepo() {
 	logger.L.Info().Msg("Cloning example repository")
-	cmd := exec.Command("git", "clone", "https://github.com/natewong1313/go-react-ssr.git")
+	cmd := exec.Command("git", "clone", "https://github.com/yunusbyrak/go-react-ssr.git")
 	cmd.Dir = b.TempDirPath
 	err := cmd.Run()
 	if err != nil {
@@ -90,7 +90,7 @@ func (b *Bootstrapper) installNPMDependencies() {
 
 func (b *Bootstrapper) updateGoModules() {
 	logger.L.Info().Msg("Installing Go modules")
-	cmd := exec.Command("go", "get", "-u", "github.com/natewong1313/go-react-ssr")
+	cmd := exec.Command("go", "get", "-u", "github.com/yunusbyrak/go-react-ssr")
 	cmd.Dir = b.ProjectDir
 	err := cmd.Run()
 	if err != nil {

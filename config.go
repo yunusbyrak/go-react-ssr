@@ -2,9 +2,10 @@ package go_ssr
 
 import (
 	"fmt"
-	"github.com/natewong1313/go-react-ssr/internal/utils"
 	"os"
 	"path"
+
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 )
 
 // Config is the config for starting the engine

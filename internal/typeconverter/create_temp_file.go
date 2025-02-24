@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/natewong1313/go-react-ssr/internal/utils"
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 )
 
 // https://github.com/tkrajina/typescriptify-golang-structs/blob/master/tscriptify/main.go#L139

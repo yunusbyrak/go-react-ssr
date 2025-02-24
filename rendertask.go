@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/buke/quickjs-go"
-	"github.com/natewong1313/go-react-ssr/internal/reactbuilder"
 	"github.com/rs/zerolog"
+	"github.com/yunusbyrak/go-react-ssr/internal/reactbuilder"
 )
 
 type renderTask struct {

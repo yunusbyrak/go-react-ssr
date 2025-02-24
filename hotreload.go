@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gorilla/websocket"
-	"github.com/natewong1313/go-react-ssr/internal/utils"
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 	"github.com/rs/zerolog"
 	"net/http"
 	"os"

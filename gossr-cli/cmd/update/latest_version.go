@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/buger/jsonparser"
-	"github.com/natewong1313/go-react-ssr/gossr-cli/utils"
+	"github.com/yunusbyrak/go-react-ssr/gossr-cli/utils"
 )
 
 func getLatestVersion() string {
-	res, err := http.Get("https://proxy.golang.org/github.com/natewong1313/go-react-ssr/@latest")
+	res, err := http.Get("https://proxy.golang.org/github.com/yunusbyrak/go-react-ssr/@latest")
 	if err != nil {
 		utils.HandleError(err)
 	}

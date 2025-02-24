@@ -1,11 +1,12 @@
 package go_ssr
 
 import (
-	"github.com/natewong1313/go-react-ssr/internal/cache"
-	"github.com/natewong1313/go-react-ssr/internal/typeconverter"
-	"github.com/natewong1313/go-react-ssr/internal/utils"
-	"github.com/rs/zerolog"
 	"os"
+
+	"github.com/rs/zerolog"
+	"github.com/yunusbyrak/go-react-ssr/internal/cache"
+	"github.com/yunusbyrak/go-react-ssr/internal/typeconverter"
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 )
 
 type Engine struct {

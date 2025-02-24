@@ -11,7 +11,7 @@ import (
 	"runtime"
 
 	"github.com/buger/jsonparser"
-	"github.com/natewong1313/go-react-ssr/internal/utils"
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 )
 
 // BuildLayoutCSSFile builds the layout css file if it exists

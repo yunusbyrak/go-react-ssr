@@ -4,7 +4,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/natewong1313/go-react-ssr/gossr-cli/logger"
+	"github.com/yunusbyrak/go-react-ssr/gossr-cli/logger"
 )
 
 func HandleError(err error) {

@@ -7,7 +7,7 @@ import (
 	"example.com/gin/models"
 
 	"github.com/gin-gonic/gin"
-	gossr "github.com/natewong1313/go-react-ssr"
+	gossr "github.com/yunusbyrak/go-react-ssr"
 )
 
 var APP_ENV string

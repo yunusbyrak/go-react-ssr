@@ -1,7 +1,7 @@
 package typeconverter
 
 import (
-	"github.com/natewong1313/go-react-ssr/internal/utils"
+	"github.com/yunusbyrak/go-react-ssr/internal/utils"
 	"os/exec"
 
 	_ "github.com/tkrajina/typescriptify-golang-structs/typescriptify"

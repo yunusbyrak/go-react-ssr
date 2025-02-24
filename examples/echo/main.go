@@ -4,7 +4,7 @@ import (
 	"example.com/echo/models"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	gossr "github.com/natewong1313/go-react-ssr"
+	gossr "github.com/yunusbyrak/go-react-ssr"
 	"log"
 	"math/rand"
 	"net/http"

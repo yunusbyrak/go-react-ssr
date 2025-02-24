@@ -1,8 +1,9 @@
 package cache
 
 import (
-	"github.com/natewong1313/go-react-ssr/internal/reactbuilder"
 	"sync"
+
+	"github.com/yunusbyrak/go-react-ssr/internal/reactbuilder"
 )
 
 type Manager struct {
