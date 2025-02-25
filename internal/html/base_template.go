@@ -27,6 +27,7 @@ const BaseTemplate = `<!DOCTYPE html>
 	  try{
 		{{ .JS }}
 	  } catch (e) {
+		console.log(e)
 		showError(e.stack)
 	  }
 	</script>

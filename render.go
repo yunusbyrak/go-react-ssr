@@ -1,6 +1,7 @@
 package go_ssr
 
 import (
+	"bytes"
 	"fmt"
 	"html/template"
 	"os"
@@ -20,6 +21,7 @@ type RenderConfig struct {
 	Title    string
 	MetaTags map[string]string
 	Props    interface{}
+	Location string
 }
 
 // RenderRoute renders a route to html
@@ -39,6 +41,7 @@ func (engine *Engine) RenderRoute(renderConfig RenderConfig) []byte {
 		props:    props,
 		filePath: filepath.ToSlash(utils.GetFullFilePath(engine.Config.FrontendDir + "/" + renderConfig.File)),
 		config:   renderConfig,
+		location: renderConfig.Location,
 	}
 	renderedHTML, css, js, err := task.Start()
 	if err != nil {
@@ -52,6 +55,30 @@ func (engine *Engine) RenderRoute(renderConfig RenderConfig) []byte {
 		RouteID:    task.routeID,
 		ServerHTML: template.HTML(renderedHTML),
 	})
+}
+
+func (engine *Engine) ClientRenderRoute(renderConfig RenderConfig) []byte {
+	// routeID is the program counter of the caller
+	pc, _, _, _ := runtime.Caller(1)
+	routeID := fmt.Sprint(pc)
+
+	props, err := propsToString(renderConfig.Props)
+	if err != nil {
+		return html.RenderError(err, routeID)
+	}
+	task := renderTask{
+		engine:   engine,
+		logger:   zerolog.New(zerolog.ConsoleWriter{Out: os.Stderr}).With().Timestamp().Logger(),
+		routeID:  routeID,
+		props:    props,
+		filePath: filepath.ToSlash(utils.GetFullFilePath(engine.Config.FrontendDir + "/" + renderConfig.File)),
+		config:   renderConfig,
+	}
+	js, err := task.StartClient()
+	if err != nil {
+		return html.RenderError(err, task.routeID)
+	}
+	return bytes.NewBufferString(js).Bytes()
 }
 
 // Convert props to JSON string, or set to null if no props are passed

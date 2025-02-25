@@ -117,10 +117,34 @@ func BuildClient(buildContents, frontendDir, assetRoute string) (BuildResult, er
 		Write:             false,
 		Outdir:            "/",
 		Metafile:          true,
+		Splitting:         false,
 		AssetNames:        fmt.Sprintf("%s/[name]", strings.TrimPrefix(assetRoute, "/")),
 		MinifyWhitespace:  os.Getenv("APP_ENV") == "production",
 		MinifyIdentifiers: os.Getenv("APP_ENV") == "production",
 		MinifySyntax:      os.Getenv("APP_ENV") == "production",
+		Loader:            loaders,
+		Define:            getFrontendEnvironments(),
+	}
+	return build(opts, true)
+}
+
+func BuildClientRaw(buildContents, frontendDir, assetRoute string) (BuildResult, error) {
+	fmt.Printf("hello from build client raw\n")
+	opts := esbuildApi.BuildOptions{
+		Stdin: &esbuildApi.StdinOptions{
+			Contents:   buildContents,
+			Loader:     esbuildApi.LoaderTSX,
+			ResolveDir: frontendDir,
+		},
+		Bundle:            true,
+		Write:             false,
+		Outdir:            "/",
+		Metafile:          true,
+		AssetNames:        fmt.Sprintf("%s/[name]", strings.TrimPrefix(assetRoute, "/")),
+		MinifyWhitespace:  false,
+		MinifyIdentifiers: false,
+		MinifySyntax:      false,
+		Splitting:         false,
 		Loader:            loaders,
 		Define:            getFrontendEnvironments(),
 	}
@@ -141,6 +165,7 @@ func build(buildOptions esbuildApi.BuildOptions, isClient bool) (BuildResult, er
 
 	var br BuildResult
 	for _, file := range result.OutputFiles {
+		fmt.Printf("file path: %s", file.Path)
 		if strings.HasSuffix(file.Path, "stdin.js") {
 			br.JS = string(file.Contents)
 		} else if strings.HasSuffix(file.Path, "stdin.css") {

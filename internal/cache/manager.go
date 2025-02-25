@@ -9,6 +9,7 @@ import (
 type Manager struct {
 	serverBuilds             *serverBuilds
 	clientBuilds             *clientBuilds
+	clientRawBuilds          *clientBuilds
 	routeIDToParentFile      *routeIDToParentFile
 	parentFileToDependencies *parentFileToDependencies
 }
@@ -20,6 +21,10 @@ func NewManager() *Manager {
 			lock:   sync.RWMutex{},
 		},
 		clientBuilds: &clientBuilds{
+			builds: make(map[string]reactbuilder.BuildResult),
+			lock:   sync.RWMutex{},
+		},
+		clientRawBuilds: &clientBuilds{
 			builds: make(map[string]reactbuilder.BuildResult),
 			lock:   sync.RWMutex{},
 		},
@@ -86,6 +91,28 @@ func (cm *Manager) RemoveClientBuild(filePath string) {
 		return
 	}
 	delete(cm.clientBuilds.builds, filePath)
+}
+
+func (cm *Manager) GetClientRawBuild(filePath string) (reactbuilder.BuildResult, bool) {
+	cm.clientRawBuilds.lock.RLock()
+	defer cm.clientRawBuilds.lock.RUnlock()
+	build, ok := cm.clientRawBuilds.builds[filePath]
+	return build, ok
+}
+
+func (cm *Manager) SetClientRawBuild(filePath string, build reactbuilder.BuildResult) {
+	cm.clientRawBuilds.lock.Lock()
+	defer cm.clientRawBuilds.lock.Unlock()
+	cm.clientRawBuilds.builds[filePath] = build
+}
+
+func (cm *Manager) RemoveClientRawBuild(filePath string) {
+	cm.clientRawBuilds.lock.Lock()
+	defer cm.clientRawBuilds.lock.Unlock()
+	if _, ok := cm.clientRawBuilds.builds[filePath]; !ok {
+		return
+	}
+	delete(cm.clientRawBuilds.builds, filePath)
 }
 
 type routeIDToParentFile struct {
